@@ -6,6 +6,8 @@
 #include <list>
 #include <tuple>
 
+#include "tuple.h"
+
 
 template<typename T,
     typename = typename std::enable_if<std::is_integral<T>::value, void>::type>
@@ -50,25 +52,19 @@ void print_ip<std::string>(const std::string& ip)
 }
 
 
-template<int INDEX, typename Callback, typename ...Args>
-void iterate_tuple(
-    const std::tuple<Args...>& tuple, [[ maybe_unused ]] Callback callback)
-{
-    if constexpr (INDEX < std::tuple_size<std::tuple<Args...>>::value) {
-        callback(std::get<INDEX>(tuple));
-        iterate_tuple<INDEX + 1, Callback, Args...>(tuple, callback);
-    }
-}
-
-
 template<typename T, typename ...Args>
 void print_ip(const std::tuple<T, Args...>& ip)
 {
-    std::cout << "tuple: " << std::get<0>(ip);
+    const std::size_t last = sizeof...(Args);
+    std::size_t index = 0;
 
-    auto print = [](const T& t) { std::cout << "." << t; };
+    auto put = [&index](const T& t) { 
+        std::cout << t;
+        if(index++ != last) std::cout << ".";
+    };
 
-    iterate_tuple<1, decltype(print), Args...>(ip, print);
+    std::cout << "tuple: ";
+    tuple::for_each(ip, put);
     std::cout << std::endl;
 }
 
@@ -89,6 +85,8 @@ int main()
     std::list<const char*> list = {"172", "16", "28", "255"};
     print_ip(list);
 
-    auto tuple = std::make_tuple(192, 168, 0, 28);
-    print_ip(tuple);
+    auto tuple1 = std::make_tuple("128");
+    auto tuple4 = std::make_tuple(192, 168, 0, 28);
+    print_ip(tuple1);
+    print_ip(tuple4);
 }
