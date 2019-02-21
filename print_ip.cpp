@@ -20,7 +20,7 @@ void print_ip(T ip)
         ip >>= 8;
     }
 
-    std::cout << "integral: ";
+    std::cout << "integral:  ";
     std::cout << bytes[0];
     for(size_t i = 1; i < sizeof(T); ++i) {
         std::cout << "." << bytes[i];
@@ -48,7 +48,7 @@ void print_ip(const T& ip)
 template<>
 void print_ip<std::string>(const std::string& ip) 
 {
-    std::cout << "string: "<< ip << std::endl;
+    std::cout << "string:    "<< ip << std::endl;
 }
 
 
@@ -63,7 +63,7 @@ void print_ip(const std::tuple<T, Args...>& ip)
         if(index++ != last) std::cout << ".";
     };
 
-    std::cout << "tuple: ";
+    std::cout << "tuple:     ";
     tuple::for_each(ip, put);
     std::cout << std::endl;
 }
