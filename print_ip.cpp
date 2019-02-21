@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <list>
+#include <tuple>
 
 
 template<typename T,
@@ -49,6 +50,29 @@ void print_ip<std::string>(const std::string& ip)
 }
 
 
+template<int INDEX, typename Callback, typename ...Args>
+void iterate_tuple(
+    const std::tuple<Args...>& tuple, [[ maybe_unused ]] Callback callback)
+{
+    if constexpr (INDEX < std::tuple_size<std::tuple<Args...>>::value) {
+        callback(std::get<INDEX>(tuple));
+        iterate_tuple<INDEX + 1, Callback, Args...>(tuple, callback);
+    }
+}
+
+
+template<typename T, typename ...Args>
+void print_ip(const std::tuple<T, Args...>& ip)
+{
+    std::cout << "tuple: " << std::get<0>(ip);
+
+    auto print = [](const T& t) { std::cout << "." << t; };
+
+    iterate_tuple<1, decltype(print), Args...>(ip, print);
+    std::cout << std::endl;
+}
+
+
 int main() 
 {
     print_ip(char(-1));
@@ -64,4 +88,7 @@ int main()
     
     std::list<const char*> list = {"172", "16", "28", "255"};
     print_ip(list);
+
+    auto tuple = std::make_tuple(192, 168, 0, 28);
+    print_ip(tuple);
 }
